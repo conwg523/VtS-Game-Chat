@@ -1,0 +1,461 @@
+/*
+    To do:
+    -use VOCE to receive sound and transcribe it into a string
+    -get the application to run in the background but still work
+    -comment nicely
+ */
+
+
+import java.awt.FlowLayout;                 //import libraries
+import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyListener;
+import javax.swing.*;
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
+
+public class Front extends JPanel implements ActionListener, ItemListener, KeyListener{
+    /*POST: Create an application to record sound (upon a user designated keypress) using a users microphone
+            then convert the voice input into a string. Using that string automatically insert the string into
+            a games chat in less than a second. The User will have to designate the key to activate the recording,
+            confirm the recording, start the chat in the game, and send the chat in the game.
+     */
+    private static final String[] KEYS = {
+            "","A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N",
+            "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+            "`", "ENTER"
+    };
+
+    public String MESSAGE;              //string that holds transcribed voice
+    public String OUT;                  //string to hold the message and the chat commands
+
+    //GUI variables
+    private JComboBox ActKey;           //combo box for selecting the voice activation key
+    private JComboBox ConKey;           //combo box for holding the message activation key
+    private JComboBox GameKey;          //combo box for activating the chat command in the game
+    private JComboBox SendKey;          //combo box for sending the chat in game
+
+    private JCheckBox Active;           //use to activate the program after it is configured
+                                        //(do not record voice without)
+
+    private JTextArea input;            //holds the message before sending
+
+
+    //controlling variable
+    private int ACTKEY;                 //int to hold the key for activation
+    private int CONKEY;                 //int to hold the key for confirmation
+    private int GAMEKEY;                //int to hold the key for game chat command
+    private int SENDKEY;                //int to hold the key for sending
+
+    private boolean ACTIVE = false;      //if the bot is active
+
+    public Front (){
+        MESSAGE = "";
+        OUT = "";
+
+        this.addKeyListener(this);       //add key listener
+
+        System.out.println("CONSTRUCTOR");  //for testing bugs
+
+        setLayout(new FlowLayout());        //set layout for gui
+
+        JPanel topRow;                  //row for combo boxes
+        JPanel midRow;                  //row for check box
+        JPanel botRow;                  //row for text field
+
+
+        ActKey = new JComboBox(KEYS);   //make combo boxes
+        ConKey = new JComboBox(KEYS);
+        GameKey = new JComboBox(KEYS);
+        SendKey = new JComboBox(KEYS);
+
+        Active = new JCheckBox("ACTIVATE CHATBOT");     //make check  box
+
+
+
+        input = new JTextArea(3,40);        // make text area
+        input.setText(MESSAGE);                             //set the text area to display the message string
+
+        ActKey.addItemListener(this);                       //add listeners to each button
+        ConKey.addItemListener(this);
+        GameKey.addItemListener(this);
+        SendKey.addItemListener(this);
+        Active.addActionListener(this);
+
+        topRow = new JPanel();                              //add droplists to top row
+        topRow.add(new JLabel("Activation Key: "));
+        topRow.add(ActKey);
+        topRow.add(new JLabel("Confirmation Key: "));
+        topRow.add(ConKey);
+        topRow.add(new JLabel("Game Chat Key: "));
+        topRow.add(GameKey);
+        topRow.add(new JLabel("Game Send Key: "));
+        topRow.add(SendKey);
+
+        midRow = new JPanel();                              //add checkboxes to mid row
+        midRow.add(Active);
+
+        botRow = new JPanel();                              //add textfield components to bottom row
+        botRow.add(new JLabel("Output: "));
+        botRow.add(input);
+
+        add(topRow);                                        //add topRow to JPanel
+        add(midRow);                                        //add midRow to JPanel
+        add(botRow);                                        //add botRow to JPanel
+
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e){
+        System.out.println("ACTIONPERFORMED");
+        input.setText(MESSAGE);     //refresh the message
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent e){
+        System.out.println("ITEMSTATECHANGE");
+        //detect if there has been any buttons pressed
+
+        if (e.getSource() == Active && e.getStateChange() == ItemEvent.SELECTED){    //if active box is checked set ACTIVE to true
+            ACTIVE = true;
+        }
+        if (e.getSource() == Active && e.getStateChange() == ItemEvent.DESELECTED){  //if active box is unchecked set ACTIVE to false
+            ACTIVE = false;
+        }
+
+        if (e.getSource() == ActKey){                                             //if the selection is changed change the variable to the corresponding key
+            if (ActKey.getSelectedItem().equals("A"))                             //all of the keys that are currently programmed
+                ACTKEY = KeyEvent.VK_A;
+            if (ActKey.getSelectedItem().equals("B"))
+                ACTKEY = KeyEvent.VK_B;
+            if (ActKey.getSelectedItem().equals("C"))
+                ACTKEY = KeyEvent.VK_C;
+            if (ActKey.getSelectedItem().equals("D"))
+                ACTKEY = KeyEvent.VK_D;
+            if (ActKey.getSelectedItem().equals("E"))
+                ACTKEY = KeyEvent.VK_E;
+            if (ActKey.getSelectedItem().equals("F"))
+                ACTKEY = KeyEvent.VK_F;
+            if (ActKey.getSelectedItem().equals("G"))
+                ACTKEY = KeyEvent.VK_G;
+            if (ActKey.getSelectedItem().equals("H"))
+                ACTKEY = KeyEvent.VK_H;
+            if (ActKey.getSelectedItem().equals("I"))
+                ACTKEY = KeyEvent.VK_I;
+            if (ActKey.getSelectedItem().equals("J"))
+                ACTKEY = KeyEvent.VK_J;
+            if (ActKey.getSelectedItem().equals("K"))
+                ACTKEY = KeyEvent.VK_K;
+            if (ActKey.getSelectedItem().equals("L"))
+                ACTKEY = KeyEvent.VK_L;
+            if (ActKey.getSelectedItem().equals("M"))
+                ACTKEY = KeyEvent.VK_M;
+            if (ActKey.getSelectedItem().equals("N"))
+                ACTKEY = KeyEvent.VK_N;
+            if (ActKey.getSelectedItem().equals("O"))
+                ACTKEY = KeyEvent.VK_O;
+            if (ActKey.getSelectedItem().equals("P"))
+                ACTKEY = KeyEvent.VK_P;
+            if (ActKey.getSelectedItem().equals("Q"))
+                ACTKEY = KeyEvent.VK_Q;
+            if (ActKey.getSelectedItem().equals("R"))
+                ACTKEY = KeyEvent.VK_R;
+            if (ActKey.getSelectedItem().equals("S"))
+                ACTKEY = KeyEvent.VK_S;
+            if (ActKey.getSelectedItem().equals("T"))
+                ACTKEY = KeyEvent.VK_T;
+            if (ActKey.getSelectedItem().equals("U"))
+                ACTKEY = KeyEvent.VK_U;
+            if (ActKey.getSelectedItem().equals("V"))
+                ACTKEY = KeyEvent.VK_V;
+            if (ActKey.getSelectedItem().equals("W"))
+                ACTKEY = KeyEvent.VK_W;
+            if (ActKey.getSelectedItem().equals("X"))
+                ACTKEY = KeyEvent.VK_X;
+            if (ActKey.getSelectedItem().equals("Y"))
+                ACTKEY = KeyEvent.VK_Y;
+            if (ActKey.getSelectedItem().equals("Z"))
+                ACTKEY = KeyEvent.VK_Z;
+            if (ActKey.getSelectedItem().equals("`"))
+                ACTKEY = KeyEvent.VK_DEAD_GRAVE;
+            if (ActKey.getSelectedItem().equals("ENTER"))
+                ACTKEY = KeyEvent.VK_ENTER;
+        }
+
+        if (e.getSource() == ConKey) {                                             //if the selection is changed change the variable to the corresponding key
+            if (ConKey.getSelectedItem().equals("A"))
+                CONKEY = KeyEvent.VK_A;
+            if (ConKey.getSelectedItem().equals("B"))
+                CONKEY = KeyEvent.VK_B;
+            if (ConKey.getSelectedItem().equals("C"))
+                CONKEY = KeyEvent.VK_C;
+            if (ConKey.getSelectedItem().equals("D"))
+                CONKEY = KeyEvent.VK_D;
+            if (ConKey.getSelectedItem().equals("E"))
+                CONKEY = KeyEvent.VK_E;
+            if (ConKey.getSelectedItem().equals("F"))
+                CONKEY = KeyEvent.VK_F;
+            if (ConKey.getSelectedItem().equals("G"))
+                CONKEY = KeyEvent.VK_G;
+            if (ConKey.getSelectedItem().equals("H"))
+                CONKEY = KeyEvent.VK_H;
+            if (ConKey.getSelectedItem().equals("I"))
+                CONKEY = KeyEvent.VK_I;
+            if (ConKey.getSelectedItem().equals("J"))
+                CONKEY = KeyEvent.VK_J;
+            if (ConKey.getSelectedItem().equals("K"))
+                CONKEY = KeyEvent.VK_K;
+            if (ConKey.getSelectedItem().equals("L"))
+                CONKEY = KeyEvent.VK_L;
+            if (ConKey.getSelectedItem().equals("M"))
+                CONKEY = KeyEvent.VK_M;
+            if (ConKey.getSelectedItem().equals("N"))
+                CONKEY = KeyEvent.VK_N;
+            if (ConKey.getSelectedItem().equals("O"))
+                CONKEY = KeyEvent.VK_O;
+            if (ConKey.getSelectedItem().equals("P"))
+                CONKEY = KeyEvent.VK_P;
+            if (ConKey.getSelectedItem().equals("Q"))
+                CONKEY = KeyEvent.VK_Q;
+            if (ConKey.getSelectedItem().equals("R"))
+                CONKEY = KeyEvent.VK_R;
+            if (ConKey.getSelectedItem().equals("S"))
+                CONKEY = KeyEvent.VK_S;
+            if (ConKey.getSelectedItem().equals("T"))
+                CONKEY = KeyEvent.VK_T;
+            if (ConKey.getSelectedItem().equals("U"))
+                CONKEY = KeyEvent.VK_U;
+            if (ConKey.getSelectedItem().equals("V"))
+                CONKEY = KeyEvent.VK_V;
+            if (ConKey.getSelectedItem().equals("W"))
+                CONKEY = KeyEvent.VK_W;
+            if (ConKey.getSelectedItem().equals("X"))
+                CONKEY = KeyEvent.VK_X;
+            if (ConKey.getSelectedItem().equals("Y"))
+                CONKEY = KeyEvent.VK_Y;
+            if (ConKey.getSelectedItem().equals("Z"))
+                CONKEY = KeyEvent.VK_Z;
+            if (ConKey.getSelectedItem().equals("`"))
+                CONKEY = KeyEvent.VK_DEAD_GRAVE;
+            if (ConKey.getSelectedItem().equals("ENTER"))
+                CONKEY = KeyEvent.VK_ENTER;
+        }
+
+
+        if (e.getSource() == GameKey) {                                             //if the selection is changed change the variable to the corresponding key
+            if (GameKey.getSelectedItem().equals("A"))
+                GAMEKEY = KeyEvent.VK_A;                                                            //rinse and repeat
+            if (GameKey.getSelectedItem().equals("B"))
+                GAMEKEY = KeyEvent.VK_B;
+            if (GameKey.getSelectedItem().equals("C"))
+                GAMEKEY = KeyEvent.VK_C;
+            if (GameKey.getSelectedItem().equals("D"))
+                GAMEKEY = KeyEvent.VK_D;
+            if (GameKey.getSelectedItem().equals("E"))
+                GAMEKEY = KeyEvent.VK_E;
+            if (GameKey.getSelectedItem().equals("F"))
+                GAMEKEY = KeyEvent.VK_F;
+            if (GameKey.getSelectedItem().equals("G"))
+                GAMEKEY = KeyEvent.VK_G;
+            if (GameKey.getSelectedItem().equals("H"))
+                GAMEKEY = KeyEvent.VK_H;
+            if (GameKey.getSelectedItem().equals("I"))
+                GAMEKEY = KeyEvent.VK_I;
+            if (GameKey.getSelectedItem().equals("J"))
+                GAMEKEY = KeyEvent.VK_J;
+            if (GameKey.getSelectedItem().equals("K"))
+                GAMEKEY = KeyEvent.VK_K;
+            if (GameKey.getSelectedItem().equals("L"))
+                GAMEKEY = KeyEvent.VK_L;
+            if (GameKey.getSelectedItem().equals("M"))
+                GAMEKEY = KeyEvent.VK_M;
+            if (GameKey.getSelectedItem().equals("N"))
+                GAMEKEY = KeyEvent.VK_N;
+            if (GameKey.getSelectedItem().equals("O"))
+                GAMEKEY = KeyEvent.VK_O;
+            if (GameKey.getSelectedItem().equals("P"))
+                GAMEKEY = KeyEvent.VK_P;
+            if (GameKey.getSelectedItem().equals("Q"))
+                GAMEKEY = KeyEvent.VK_Q;
+            if (GameKey.getSelectedItem().equals("R"))
+                GAMEKEY = KeyEvent.VK_R;
+            if (GameKey.getSelectedItem().equals("S"))
+                GAMEKEY = KeyEvent.VK_S;
+            if (GameKey.getSelectedItem().equals("T"))
+                GAMEKEY = KeyEvent.VK_T;
+            if (GameKey.getSelectedItem().equals("U"))
+                GAMEKEY = KeyEvent.VK_U;
+            if (GameKey.getSelectedItem().equals("V"))
+                GAMEKEY = KeyEvent.VK_V;
+            if (GameKey.getSelectedItem().equals("W"))
+                GAMEKEY = KeyEvent.VK_W;
+            if (GameKey.getSelectedItem().equals("X"))
+                GAMEKEY = KeyEvent.VK_X;
+            if (GameKey.getSelectedItem().equals("Y"))
+                GAMEKEY = KeyEvent.VK_Y;
+            if (GameKey.getSelectedItem().equals("Z"))
+                GAMEKEY = KeyEvent.VK_Z;
+            if (GameKey.getSelectedItem().equals("`"))
+                GAMEKEY = KeyEvent.VK_DEAD_GRAVE;
+            if (GameKey.getSelectedItem().equals("ENTER"))
+                GAMEKEY = KeyEvent.VK_ENTER;
+        }
+
+
+
+        if (e.getSource() == SendKey) {                                             //if the selection is changed change the variable to the corresponding key
+            if (SendKey.getSelectedItem().equals("A"))
+                SENDKEY = KeyEvent.VK_A;
+            if (SendKey.getSelectedItem().equals("B"))
+                SENDKEY = KeyEvent.VK_B;
+            if (SendKey.getSelectedItem().equals("C"))
+                SENDKEY = KeyEvent.VK_C;
+            if (SendKey.getSelectedItem().equals("D"))
+                SENDKEY = KeyEvent.VK_D;
+            if (SendKey.getSelectedItem().equals("E"))
+                SENDKEY = KeyEvent.VK_E;
+            if (SendKey.getSelectedItem().equals("F"))
+                SENDKEY = KeyEvent.VK_F;
+            if (SendKey.getSelectedItem().equals("G"))
+                SENDKEY = KeyEvent.VK_G;
+            if (SendKey.getSelectedItem().equals("H"))
+                SENDKEY = KeyEvent.VK_H;
+            if (SendKey.getSelectedItem().equals("I"))
+                SENDKEY = KeyEvent.VK_I;
+            if (SendKey.getSelectedItem().equals("J"))
+                SENDKEY = KeyEvent.VK_J;
+            if (SendKey.getSelectedItem().equals("K"))
+                SENDKEY = KeyEvent.VK_K;
+            if (SendKey.getSelectedItem().equals("L"))
+                SENDKEY = KeyEvent.VK_L;
+            if (SendKey.getSelectedItem().equals("M"))
+                SENDKEY = KeyEvent.VK_M;
+            if (SendKey.getSelectedItem().equals("N"))
+                SENDKEY = KeyEvent.VK_N;
+            if (SendKey.getSelectedItem().equals("O"))
+                SENDKEY = KeyEvent.VK_O;
+            if (SendKey.getSelectedItem().equals("P"))
+                SENDKEY = KeyEvent.VK_P;
+            if (SendKey.getSelectedItem().equals("Q"))
+                SENDKEY = KeyEvent.VK_Q;
+            if (SendKey.getSelectedItem().equals("R"))
+                SENDKEY = KeyEvent.VK_R;
+            if (SendKey.getSelectedItem().equals("S"))
+                SENDKEY = KeyEvent.VK_S;
+            if (SendKey.getSelectedItem().equals("T"))
+                SENDKEY = KeyEvent.VK_T;
+            if (SendKey.getSelectedItem().equals("U"))
+                SENDKEY = KeyEvent.VK_U;
+            if (SendKey.getSelectedItem().equals("V"))
+                SENDKEY = KeyEvent.VK_V;
+            if (SendKey.getSelectedItem().equals("W"))
+                SENDKEY = KeyEvent.VK_W;
+            if (SendKey.getSelectedItem().equals("X"))
+                SENDKEY = KeyEvent.VK_X;
+            if (SendKey.getSelectedItem().equals("Y"))
+                SENDKEY = KeyEvent.VK_Y;
+            if (SendKey.getSelectedItem().equals("Z"))
+                SENDKEY = KeyEvent.VK_Z;
+            if (SendKey.getSelectedItem().equals("`"))
+                SENDKEY = KeyEvent.VK_DEAD_GRAVE;
+            if (SendKey.getSelectedItem().equals("ENTER"))
+                SENDKEY = KeyEvent.VK_ENTER;
+        }
+    }
+
+    @Override
+    /** Handle the key-pressed event from the text field. */
+    public void keyPressed(KeyEvent e) {
+        System.out.println("KEYPRESSED");               //for debugging
+
+    }
+
+    @Override
+    /** Handle the key-released event from the text field. */
+    public void keyReleased(KeyEvent e) {
+        System.out.println("KEYRELEASED");               //for debugging
+
+    }
+
+    @Override
+    /** Handle the key typed event from the text field. */
+    public void keyTyped(KeyEvent e) {
+        System.out.println("KEYTYPED");               //for debugging
+        if (ACTIVE == true) {
+            if (MESSAGE != "")
+                keyList(e);
+            else
+                keySender(e);
+        }
+    }
+
+    public void keyList(KeyEvent e){
+        //PRE:  receive key pressed
+        //POST: call the voice to string class and set the output to MESSAGE
+        System.out.println("KEYLIST");               //for debugging
+        int key = e.getID();                            //turn key press into string
+        if (key == ACTKEY){                             //listen to key presses
+            //***place holder for voice to string class***
+            MESSAGE = "Hello World";                    //basic message for testing
+        }
+    }
+
+    public void keySender(KeyEvent e){
+        System.out.println("KEYSENDER");               //for debugging
+        int key = e.getID();
+        if (key == CONKEY){
+            Chat(Integer.toString(GAMEKEY) + MESSAGE + Integer.toString(SENDKEY));      //convert ints to strings and send to chat function
+            MESSAGE = "";           //empty string
+        }
+    }
+
+    public void Chat(String text){ //send string to chat
+        //PRE:  receive stirng with commands if the correct key is pressed
+        //POST: output the string with the commands to the computer as if it were a keyboard
+
+        System.out.println("CHAT");     //for debugging
+
+        try {
+            Robot ChatBot = new Robot();        //make robot (keyboard simulator
+
+            String BigText = text.toUpperCase();    //cop string and set to uppercase because the bot only reads uppercase
+
+            char[] TEXT = text.toCharArray();           //convert text to char array
+            char[] BIGTEXT = BigText.toCharArray();     //convert bigText to char array
+
+            for(int i: BIGTEXT){                             //for loop to send each letter of array
+                if (TEXT[i] == BIGTEXT[i])                   //if the values don't match make the robot use lowercase using shift key
+                    ChatBot.keyPress(KeyEvent.VK_SHIFT);
+
+                ChatBot.keyPress(TEXT[i]);
+                ChatBot.keyRelease(TEXT[i]);
+
+                ChatBot.keyRelease(KeyEvent.VK_SHIFT);
+            }
+
+        }
+        catch (AWTException e){                 //catch errors (has to be there)
+            e.printStackTrace();
+        }
+    }
+
+
+
+    public static void main(String[] args){                     //main to run program
+
+        Front panel = new Front();                              //make new panel
+        JFrame app = new JFrame();                              //make new JFrame
+
+        app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);     //work in the back round
+
+        app.add(panel);                                         //add panel
+
+        app.setSize(800,200);                     //make size
+        app.setTitle("Flitter");                                //set title
+        app.setVisible(true);                                   //make visible
+    }
+
+}
